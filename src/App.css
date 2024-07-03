@@ -1,0 +1,24 @@
+.inner{
+  @apply max-w-7xl w-full mx-auto py-10
+}
+.select-box {
+  @apply flex bg-white/10 items-stretch rounded-md
+}
+.select-box span {
+  @apply bg-white/30 h-10 w-10 flex items-center justify-center rounded-l-md
+}
+.select-box input:nth-child(2) {
+  @apply bg-transparent w-full px-4 focus:outline-none
+}
+.card {
+  @apply grid pt-4 border border-white bg-white/10 backdrop-blur-md text-center rounded-md cursor-pointer;
+  box-shadow: inset 0 0px 10px 2px rgba(255,255,255,0.4);
+  transition: 0.3s;
+}
+.card:hover {
+  box-shadow: inset 0 0px 150px 10px rgba(255,255,255,0.6);
+}
+.card:hover img {
+  transform: scale(1.2);
+  transition: 0.3s;
+}
