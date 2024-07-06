@@ -5,11 +5,9 @@ import Products from "../components/Products";
 export default function Main() {
   return (
     <section>
-      <div className="mb-5">
-        <img src={banner} alt="banner" />
-      </div>
+      <img src={banner} alt="banner" />
       <div className="inner">
-        <Products />
+        <Products limit={12}/>
       </div>
     </section>
   );
