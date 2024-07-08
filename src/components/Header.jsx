@@ -1,36 +1,22 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 import { RiGalleryView2 } from "react-icons/ri";
-import logo from '../assets/logo.png'
-import User from "./User";
 import { useAuthContext } from "../context/AuthContext";
-
-const Button = ({ text, onClick }) => {
-  return (
-    <button
-      className="rounded-full bg-primary text-sm px-3 py-1 text-base font-extrabold"
-      onClick={onClick}
-    >{text}</button>
-  )
-}
-const HEADER_CLASSNAME = "fixed top-0 left-0 w-full bg-white/10 z-10 backdrop-blur-md"
+import logo from '../logo.svg'
+import User from "./User";
 
 export default function Header() {
-  
-  const { user, login, logout } = useAuthContext();
+  const { user } = useAuthContext();
   return (
-    <header className={HEADER_CLASSNAME}>
+    <header className="px-3 lg:px-0 text-white">
       <div className="flex items-center mx-auto max-w-7xl w-full h-20">
-        <Link to="/">
-          <img src={logo} className="w-14" alt="logo" />
+        <Link to="/" className="flex items-center gap-2">
+          <img src={logo} className="w-10" alt="logo" />
+          <span className="text-xl font-bold">MJDONUTS</span>
         </Link>
-        <div className="flex items-center gap-4 ml-auto text-lg">
+        <div className="flex items-center gap-4 ml-auto text-xl">
           <Link to="/products"><RiGalleryView2 /></Link>
           {user && <User user={user} />}
-          {user ?
-            <Button text={'로그아웃'} onClick={logout} />
-            : <Button text={'로그인'} onClick={login} />
-          }
         </div>
       </div>
     </header>

@@ -14,15 +14,15 @@ export default function Products({ limit }) {
   const items = displayProducts(products, limit);
 
   return (
-    <div>
+    <>
       {isLoading && <p>로딩중</p>}
       {error && <p>{error}</p>}
-      <ul className="grid grid-cols-4 gap-x-5 gap-y-8">
+      <ul className="grid grid-cols-1 md:grid-cols-2  xl:grid-cols-4 gap-x-5 gap-y-8">
         {items &&
           items.map((product) => (
             <ProductItem key={product.id} product={product} />
           ))}
       </ul>
-    </div>
+    </>
   );
 }

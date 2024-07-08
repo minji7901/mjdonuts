@@ -1,13 +1,16 @@
 import React from 'react';
-import banner from '../assets/banner.jpg'
 import Products from "../components/Products";
+import MainBnr from "../components/MainBnr";
 
 export default function Main() {
   return (
-    <section>
-      <img src={banner} alt="banner" />
-      <div className="inner">
-        <Products limit={12}/>
+    <section className="bg-primary-100">
+      <MainBnr />
+      <div className="bg-main">
+        <div className="inner">
+          <h2 className="text-default text-center font-bold text-3xl mb-10">Recommended Donuts</h2>
+          <Products limit={8} />
+        </div>
       </div>
     </section>
   );

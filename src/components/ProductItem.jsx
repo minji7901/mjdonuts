@@ -1,19 +1,28 @@
 import React from 'react';
-import { TbMoneybag } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
+import { BiWon } from "react-icons/bi";
 
-export default function ProductItem({product,product:{id,image,title,price}}) {
-  const  PRICE_CLASSNAME = "flex items-center justify-center gap-1 p-4 border-t border-t-white h-14 mt-auto text-primary";
+export default function ProductItem({ product, product: { id, image, title, price } }) {
   const navigate = useNavigate();
+
+  const ITEM_CLASSNAME = 'cursor-pointer shadow-base rounded-2xl py-5 hover:scale-110 hover:bg-base/70 transition-all'
+  const ITEM_PRICE_CLASSNAME = "flex items-center justify-center font-semibold text-primary-200"
+
   return (
-    <li className="card" onClick={()=>{navigate(`/product/${id}`, {state: {product}})}}>
+    <li
+      className={ITEM_CLASSNAME}
+      onClick={() => { navigate(`/product/${id}`, { state: { product } })}}
+    >
       <img src={image} className="max-w-48 mx-auto" alt={title} />
-      <p className="p-4 break-keep text-gray-300">{title}</p>
-      <div className={PRICE_CLASSNAME}>
-        <TbMoneybag />
-        <p className="font-semibold text-lg">{price.toLocaleString()}</p>
+      <div className="text-center">
+        <p className="text-lg py-2 break-keep text-default font-bold"> 
+          {title}
+        </p>
+        <div className={ITEM_PRICE_CLASSNAME}>
+          <BiWon className="mb-[1px]" />
+          <p>{price.toLocaleString()}</p>
+        </div>
       </div>
     </li>
   );
 }
-

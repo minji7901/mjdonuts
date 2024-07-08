@@ -1,51 +1,86 @@
 import React from 'react';
-import { TbMoneybag } from "react-icons/tb";
+import { BiWon } from "react-icons/bi";
 import useProducts from "../hooks/useProducts";
 
 export default function CartProduct({
   product,
-  product: { id, image, title, option, quantity, price ,numSelected },
+  product: { id, image, title, quantity, price, selectedOption },
   uid,
 }) {
   const { updateCartMutation, deleteCartMutation } = useProducts(uid);
+
   const handleMinus = (e) => {
     if (quantity < 2) return;
     e.stopPropagation();
-    updateCartMutation.mutate({ uid, product: { ...product, quantity: quantity - 1 } });
+    updateCartMutation.mutate({
+      uid,
+      product: {
+        ...product,
+        quantity: quantity - 1
+      }
+    });
   };
+
   const handlePlus = (e) => {
     e.stopPropagation();
-    updateCartMutation.mutate({ uid, product: { ...product, quantity: quantity + 1 } });
+    updateCartMutation.mutate({
+      uid,
+      product: {
+        ...product,
+        quantity: quantity + 1
+      }
+    });
   }
+
   const handleDelete = (e) => {
     e.stopPropagation();
     deleteCartMutation.mutate({ uid, id });
   }
 
-  const CART_BOX_CLASSNAME = "flex items-center gap-5 border-b border-b-white/50 py-12 last:border-none"
-  const CART_INPUT_CLASSNAME = "bg-transparent px-3 focus:outline-none w-14 text-center text-sm border-y py-1 border-white h-full"
-  const CART_ITEM_CLASSNAME = "border border-white bg-white/10 backdrop-blur-md text-center p-4 rounded-full"
-  const CART_NUM_CLASSNAME = "bg-white px-2 py-1 text-base text-[#030424]"
+  const totalPrice = price * quantity;
+
+  const CARTPRODUCT_CLASSNAME = "flex items-center gap-5 flex-col lg:flex-row lg:py-2 pb-10 border-b border-dashed border-primary-100 last:border-b-0 last:pb-0"
+  const CART_COMMON_CLASSNAME = "flex items-center  gap-2 basis-1/6 justify-center"
+  const CART_NUM_CLASSNAME = "w-7 h-7 rounded-full text-white font-lg"
 
   return (
-    <div className={CART_BOX_CLASSNAME}>
-      <div className={CART_ITEM_CLASSNAME}>
-        <img src={image} className="max-w-24" alt={title} />
+    <div className={CARTPRODUCT_CLASSNAME}>
+      <img src={image} className="basis-1/6 max-w-32" alt={title} />
+      <div className="basis-2/6">
+        <p className="font-semibold text-xl mb-1">{title}</p>
+        {selectedOption === "none" ?
+          <></>
+          : <p className="text-default/50 font-light text-sm">
+            ( + 1100 {selectedOption})
+          </p>
+        }
       </div>
-      <div>
-        <p className="text-lg">{title}</p>
-        <p className="mt-1 mb-3 text-sm text-white/50 ">({option}묶음)</p>
-        <div className="flex rounded-md h-8">
-          <button onClick={(e) => { handleMinus(e); }} className={'rounded-l-md ' + CART_NUM_CLASSNAME}>-</button>
-          <input type="number" value={quantity} readOnly className={CART_INPUT_CLASSNAME} />
-          <button onClick={(e) => { handlePlus(e) }} className={'rounded-r-md ' + CART_NUM_CLASSNAME}>+</button>
-        </div>
+      <div className={CART_COMMON_CLASSNAME}>
+        <button
+          className={'bg-primary-100/50 ' + CART_NUM_CLASSNAME}
+          onClick={(e) => { handleMinus(e); }}
+        >
+          -
+        </button>
+        <span>{quantity}</span>
+        <button
+          className={'bg-primary-100 ' + CART_NUM_CLASSNAME}
+          onClick={(e) => { handlePlus(e) }}
+        >
+          +
+        </button>
       </div>
-      <div className="flex items-center gap-1 text-xl ml-auto">
-        <TbMoneybag />
-        <p>{price.toLocaleString()}</p>
+      <div className={'tex-xl ' + CART_COMMON_CLASSNAME}>
+        <BiWon />
+        <p>{totalPrice.toLocaleString()}</p>
       </div>
-      <button onClick={(e) => { handleDelete(e) }} className="ml-4 border border-white px-3 py-1 rounded-md">삭제</button>
+      <div className="basis-1/6 text-center">
+        <button
+          className="bg-secondary text-white shadow-base px-5 py-1 rounded-full "
+          onClick={(e) => { handleDelete(e) }} >
+          del
+        </button>
+      </div>
     </div>
   );
 }

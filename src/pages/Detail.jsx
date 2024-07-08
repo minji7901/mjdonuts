@@ -1,98 +1,100 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from "react-router-dom";
 import { addOrUpdateCart } from "../api/firebase";
 import { useAuthContext } from "../context/AuthContext";
+import { BiWon } from "react-icons/bi";
+
+const OptionSelector = ({ options, selectedOption, onSelect }) => {
+  return (
+    <div className="flex items-center flex-wrap gap-5 mt-1">
+      {options && options.map((item, i) => (
+        <div className="chk-icon bg-transparent" key={i}>
+          <input
+            type="radio"
+            id={item}
+            name="op"
+            value={item}
+            onChange={(e) => onSelect(e, i)}
+            checked={selectedOption === item}
+          />
+          <label htmlFor={item}>{item}</label>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default function Detail() {
-  const { user } = useAuthContext();
+  const { user, login } = useAuthContext();
   const uid = user?.uid;
   const { state: { product } } = useLocation();
   const { id, image, options, price, title } = product;
+
   const [selectedOption, setSelectedOption] = useState(options && options[0]);
   const [numSelected, setNumSelected] = useState(0);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(price);
+
+  useEffect(() => {
+    setTotalPrice(price + (numSelected > 0 ? 1100 : 0));
+  }, [numSelected, price]);
+
   const handleSelect = (e, i) => {
     setSelectedOption(e.target.value);
     setNumSelected(i);
   };
-  
-  // 기본 가격과 할인된 가격 계산
-  const defaultPrice = price * selectedOption;
-  const calculatedPrice = numSelected > 0 ? defaultPrice - ((defaultPrice / 100) * (5 * numSelected)) : defaultPrice;
-  
-  const [successMessage, setSuccessMessage] = useState(null);
-  
-  const { login } = useAuthContext();
+
   const handleClick = () => {
     if (!user) {
-      alert("로그인이 필요합니다");
-      login();  // 로그인 함수 호출
+      alert("Login is required");
+      login();
       return;
     }
-    const productToAdd  = { id, image, title, price: calculatedPrice? calculatedPrice: defaultPrice, option: selectedOption, quantity: 1 };
+    const productToAdd = { id, image, title, price: totalPrice ,selectedOption , quantity:1};
 
-    addOrUpdateCart(uid, productToAdd )
+    addOrUpdateCart(uid, productToAdd)
       .then(() => {
-        setSuccessMessage('장바구니에 상품이 담겼습니다');
+        setSuccessMessage('The product has been added to your shopping cart.');
         setTimeout(() => {
-          setSuccessMessage(null)
-        }, 2000)
+          setSuccessMessage(null);
+        }, 2000);
       })
       .catch((error) => {
-        console.error('장바구니 추가 중 오류 발생:', error);
+        console.error('error message : ', error);
       });
-  }
-  const SUCCESS_MESSAGE_CLASSNAME = "absolute top-24 z-10 left-[50%] translate-x-[-50%] bg-primary font-bold text-black px-5 py-3 rounded-xl shadow-md shadow-primary/50";
-  const CART_BTN_CLASSNAME = "mt-6 rounded-full w-full py-3 bg-[#396AD5] font-bold text-lg"
+  };
+
+  const SUCCESS_MESSAGE_CLASSNAME = "absolute top-24 left-[50%] translate-x-[-50%] bg-primary-100 font-bold px-5 py-3 rounded-xl shadow-md text-white";
+  const DETAIL_CLASSNAME = "inline-flex items-center flex-wrap justify-center gap-10 px-16 py-5 shadow-base rounded-2xl";
+  const DETAIL_BTN_CLASSNAME = "mt-6 rounded-full w-full pt-3 pb-2 bg-secondary font-semibold text-lg text-white shadow-base";
 
   return (
-    <section className="detail-bg pt-10">
-      <div className="inner pt-10">
-        {successMessage &&
-          <span className={SUCCESS_MESSAGE_CLASSNAME}>👏 {successMessage}</span>
-        }
-        <div className="flex justify-center items-center gap-40">
-          <img src={image} alt={title} />
-          <div>
-            <ul className="detail-item">
-              <li className="title">
-                <p>상품명</p>
-                <p className="text-2xl">{title}</p>
-              </li>
-              <li className="option">
-                <p>묶음</p>
-                <div className="flex gap-4">
-                  {options && options.map((item, i) => (
-                    <div className="flex gap-1 cursor-pointer bg-transparent" key={i}>
-                      <input
-                        type="radio"
-                        id={item}
-                        name="op"
-                        value={item}
-                        className="cursor-pointer"
-                        onChange={(e) => handleSelect(e, i)}
-                        defaultChecked={i === 0}
-                      />
-                      <label htmlFor={item} className="cursor-pointer text-white/50">{item}개</label>
-                    </div>
-                  ))}
-                </div>
-              </li>
-              <li>
-                <p>가격</p>
-                {
-                  numSelected === 0 ? (
-                    <p className="text-primary text-xl">{defaultPrice.toLocaleString()} 캐시</p>
-                  ) : (
-                    <div className="flex items-center gap-5">
-                      <p className="text-white/50 line-through text-nowrap">{defaultPrice.toLocaleString()} 캐시</p>
-                      <p className="text-primary text-xl">{calculatedPrice.toLocaleString()} 캐시</p>
-                    </div>
-                  )
-                }
-              </li>
-            </ul>
-            <button className={CART_BTN_CLASSNAME} onClick={handleClick}>장바구니</button>
+    <section className="bg-main h-cal">
+      <div className="inner">
+        <div className="h-cal text-center">
+        {successMessage && (
+          <p className={SUCCESS_MESSAGE_CLASSNAME}>👏 {successMessage}</p>
+        )}
+        <div className={DETAIL_CLASSNAME}>
+          <div className="max-w-80">
+            <img src={image} alt={title} />
           </div>
+          <div>
+            <p className="text-4xl font-semibold">
+              {title}
+            </p>
+            <p className="font-semibold text-left text-xl mt-5">Filling <span className="text-default/50 font-light text-base">(+1100)</span></p>
+            <OptionSelector options={options} selectedOption={selectedOption} onSelect={handleSelect} />
+            <div className="flex items-center justify-center gap-1 text-xl font-semibold mt-10">
+              <p>Total</p>
+              <div className="flex items-center text-primary-200">
+                <BiWon />
+                <p>{totalPrice.toLocaleString()}</p>
+              </div>
+            </div>
+            <button className={DETAIL_BTN_CLASSNAME} onClick={handleClick}>ADD TO CART</button>
+          </div>
+        </div>
         </div>
       </div>
     </section>
