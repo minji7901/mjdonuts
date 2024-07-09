@@ -22,27 +22,27 @@ export default function Cart() {
           <h1>CART</h1>
         </div>
         {isLoading && <p>loading..</p>}
-        {!hasProducts && !isLoading && 
+        {!hasProducts && !isLoading &&
           <p className="text-xl">There are no products in your shopping cart.</p>
         }
-        {hasProducts && (
-          products && products.map((product) => (
-            <div className="flex rounded-3xl shadow-base flex-col lg:flex-row">
-              <div className="px-10 py-5 w-full lg-w-calc-64">
+        {hasProducts &&
+          <div className="flex rounded-3xl shadow-base flex-col lg:flex-row">
+            <div className="px-10 py-5 w-full lg-w-calc-64">
+              {products && products.map((product) => (
                 <CartProduct key={product.id} product={product} />
-              </div>
-              <div className="text-2xl p-5 w-full lg:w-64 bg-primary-100 rounded-b-3xl lg:rounded-r-3xl lg:rounded-l-none">
-                <div className="flex items-center justify-center gap-2 h-full font-semibold text-white">
-                  <p>TOTAL :</p>
-                  <p className="flex items-center gap-1">
-                    <BiWon />
-                    {totalPrice.toLocaleString()}
-                  </p>
-                </div>
+              ))}
+            </div>
+            <div className="text-2xl p-5 w-full lg:w-64 bg-primary-100 rounded-b-3xl lg:rounded-r-3xl lg:rounded-l-none">
+              <div className="flex items-center justify-center gap-2 h-full font-semibold text-white">
+                <p>TOTAL :</p>
+                <p className="flex items-center gap-1">
+                  <BiWon />
+                  {totalPrice.toLocaleString()}
+                </p>
               </div>
             </div>
-          ))
-        )}
+          </div>
+        }
       </div>
     </section>
   );
