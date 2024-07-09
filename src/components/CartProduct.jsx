@@ -1,47 +1,34 @@
 import React from 'react';
 import { BiWon } from "react-icons/bi";
-import useProducts from "../hooks/useProducts";
+import useCart from "../hooks/useCart";
+
+const CARTPRODUCT_CLASSNAME = "flex items-center gap-5 flex-col lg:flex-row lg:py-2 pb-10 border-b border-dashed border-primary-100 last:border-b-0 last:pb-0"
+const CART_COMMON_CLASSNAME = "flex items-center  gap-2 basis-1/6 justify-center"
+const CART_NUM_CLASSNAME = "w-7 h-7 rounded-full text-white font-lg"
 
 export default function CartProduct({
   product,
   product: { id, image, title, quantity, price, selectedOption },
-  uid,
 }) {
-  const { updateCartMutation, deleteCartMutation } = useProducts(uid);
+  const { addOrUpdateItem, removeItem } = useCart();
 
   const handleMinus = (e) => {
     if (quantity < 2) return;
     e.stopPropagation();
-    updateCartMutation.mutate({
-      uid,
-      product: {
-        ...product,
-        quantity: quantity - 1
-      }
-    });
+    addOrUpdateItem.mutate({ ...product, quantity: quantity - 1 });
   };
 
   const handlePlus = (e) => {
     e.stopPropagation();
-    updateCartMutation.mutate({
-      uid,
-      product: {
-        ...product,
-        quantity: quantity + 1
-      }
-    });
+    addOrUpdateItem.mutate({ ...product, quantity: quantity + 1 });
   }
 
   const handleDelete = (e) => {
     e.stopPropagation();
-    deleteCartMutation.mutate({ uid, id });
+    removeItem.mutate(id);
   }
 
   const totalPrice = price * quantity;
-
-  const CARTPRODUCT_CLASSNAME = "flex items-center gap-5 flex-col lg:flex-row lg:py-2 pb-10 border-b border-dashed border-primary-100 last:border-b-0 last:pb-0"
-  const CART_COMMON_CLASSNAME = "flex items-center  gap-2 basis-1/6 justify-center"
-  const CART_NUM_CLASSNAME = "w-7 h-7 rounded-full text-white font-lg"
 
   return (
     <div className={CARTPRODUCT_CLASSNAME}>

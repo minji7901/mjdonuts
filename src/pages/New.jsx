@@ -20,10 +20,14 @@ export default function New() {
       setProduct({ ...product, [name]: value });
     }
   }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsUploading(true);
     try {
+      if (!file) {
+        throw new Error('No file selected');
+      }
       const imageUrl = await uploadImage(file);
       addProduct.mutate(
         { product: { ...product, image: imageUrl }, url: imageUrl },
@@ -59,13 +63,13 @@ export default function New() {
         {successMessage &&
           <div className={SUCCESS_MESSAGE_CLASSNAME}>👏 {successMessage}</div>
         }
-        {file &&
+        {file && (
           <img
             src={URL.createObjectURL(file)}
             className="mx-auto max-w-80"
             alt="local file"
           />
-        }
+        )}
         <NewProductForm
           product={product}
           file={file}

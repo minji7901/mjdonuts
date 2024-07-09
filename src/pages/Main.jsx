@@ -1,6 +1,6 @@
 import React from 'react';
-import Products from "../components/Products";
 import MainBnr from "../components/MainBnr";
+import Products from "../components/Products";
 
 export default function Main() {
   return (

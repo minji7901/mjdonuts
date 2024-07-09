@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from "react-router-dom";
-import { addOrUpdateCart } from "../api/firebase";
-import { useAuthContext } from "../context/AuthContext";
 import { BiWon } from "react-icons/bi";
+import useCart from "../hooks/useCart";
+import { useAuthContext } from "../context/AuthContext";
+
+const SUCCESS_MESSAGE_CLASSNAME = "absolute top-24 left-[50%] translate-x-[-50%] bg-primary-100 font-bold px-5 py-3 rounded-xl shadow-md text-white";
+const DETAIL_CLASSNAME = "inline-flex items-center flex-wrap justify-center gap-10 px-16 py-5 shadow-base rounded-2xl";
+const DETAIL_BTN_CLASSNAME = "mt-6 rounded-full w-full pt-3 pb-2 bg-secondary font-semibold text-lg text-white shadow-base";
 
 const OptionSelector = ({ options, selectedOption, onSelect }) => {
   return (
@@ -25,14 +29,13 @@ const OptionSelector = ({ options, selectedOption, onSelect }) => {
 };
 
 export default function Detail() {
-  const { user, login } = useAuthContext();
-  const uid = user?.uid;
-  const { state: { product } } = useLocation();
-  const { id, image, options, price, title } = product;
+  const { user , login } = useAuthContext();
+  const { addOrUpdateItem } = useCart();
+  const { state: { product: { id, image, options, price, title } } } = useLocation();
 
   const [selectedOption, setSelectedOption] = useState(options && options[0]);
   const [numSelected, setNumSelected] = useState(0);
-  const [successMessage, setSuccessMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState();
   const [totalPrice, setTotalPrice] = useState(price);
 
   useEffect(() => {
@@ -45,56 +48,47 @@ export default function Detail() {
   };
 
   const handleClick = () => {
-    if (!user) {
+    if(!user) {
       alert("Login is required");
       login();
-      return;
+      return ;
     }
-    const productToAdd = { id, image, title, price: totalPrice ,selectedOption , quantity:1};
-
-    addOrUpdateCart(uid, productToAdd)
-      .then(() => {
+    const productToAdd = { id, image, title, price: totalPrice, selectedOption, quantity: 1 };
+    addOrUpdateItem.mutate(productToAdd, {
+      onSuccess: () => {
         setSuccessMessage('The product has been added to your shopping cart.');
-        setTimeout(() => {
-          setSuccessMessage(null);
-        }, 2000);
-      })
-      .catch((error) => {
-        console.error('error message : ', error);
-      });
+        setTimeout(() => setSuccessMessage(null), 3000);
+      },
+    });
   };
-
-  const SUCCESS_MESSAGE_CLASSNAME = "absolute top-24 left-[50%] translate-x-[-50%] bg-primary-100 font-bold px-5 py-3 rounded-xl shadow-md text-white";
-  const DETAIL_CLASSNAME = "inline-flex items-center flex-wrap justify-center gap-10 px-16 py-5 shadow-base rounded-2xl";
-  const DETAIL_BTN_CLASSNAME = "mt-6 rounded-full w-full pt-3 pb-2 bg-secondary font-semibold text-lg text-white shadow-base";
 
   return (
     <section className="bg-main h-cal">
       <div className="inner">
         <div className="h-cal text-center">
-        {successMessage && (
-          <p className={SUCCESS_MESSAGE_CLASSNAME}>👏 {successMessage}</p>
-        )}
-        <div className={DETAIL_CLASSNAME}>
-          <div className="max-w-80">
-            <img src={image} alt={title} />
-          </div>
-          <div>
-            <p className="text-4xl font-semibold">
-              {title}
-            </p>
-            <p className="font-semibold text-left text-xl mt-5">Filling <span className="text-default/50 font-light text-base">(+1100)</span></p>
-            <OptionSelector options={options} selectedOption={selectedOption} onSelect={handleSelect} />
-            <div className="flex items-center justify-center gap-1 text-xl font-semibold mt-10">
-              <p>Total</p>
-              <div className="flex items-center text-primary-200">
-                <BiWon />
-                <p>{totalPrice.toLocaleString()}</p>
-              </div>
+          {successMessage && (
+            <p className={SUCCESS_MESSAGE_CLASSNAME}>👏 {successMessage}</p>
+          )}
+          <div className={DETAIL_CLASSNAME}>
+            <div className="max-w-80">
+              <img src={image} alt={title} />
             </div>
-            <button className={DETAIL_BTN_CLASSNAME} onClick={handleClick}>ADD TO CART</button>
+            <div>
+              <p className="text-4xl font-semibold">
+                {title}
+              </p>
+              <p className="font-semibold text-left text-xl mt-5">Filling <span className="text-default/50 font-light text-base">(+1100)</span></p>
+              <OptionSelector options={options} selectedOption={selectedOption} onSelect={handleSelect} />
+              <div className="flex items-center justify-center gap-1 text-xl font-semibold mt-10">
+                <p>Total</p>
+                <div className="flex items-center text-primary-200">
+                  <BiWon />
+                  <p>{totalPrice.toLocaleString()}</p>
+                </div>
+              </div>
+              <button className={DETAIL_BTN_CLASSNAME} onClick={handleClick}>ADD TO CART</button>
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </section>

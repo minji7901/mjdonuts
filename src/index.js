@@ -21,31 +21,27 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <NotFound />,
     children: [
+      { index: true, path: '/', element: <Main /> },
+      { path: "/products", element: <All /> },
       {
-        index: true,
-        element: <Main />,
+        path: "/products/new",
+        element: (
+          <ProtectedRoute requireAdmin>
+            <New />
+          </ProtectedRoute>
+        )
       },
       {
-        path: "/products",
-        element: <All />,
-      },
-      {
-        path: "/product/new",
-        element: 
-        <ProtectedRoute requireAdmin>
-          <New />
-        </ProtectedRoute>,
-      },
-      {
-        path: "/product/:id",
+        path: "/products/:id",
         element: <Detail />,
       },
       {
-        path: "/carts/",
-        element: 
-        <ProtectedRoute>
-          <Cart />
-        </ProtectedRoute>,
+        path: "/cart",
+        element: (
+          <ProtectedRoute>
+            <Cart />
+          </ProtectedRoute>
+        )
       },
     ],
   },
